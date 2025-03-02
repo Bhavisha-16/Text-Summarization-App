@@ -20,6 +20,7 @@ Despite these challenges, technology continues to drive innovation and progress.
 
 pip install sumy
 pip install nltk
+import nltk
 nltk.download('punkt_tab')
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
