@@ -18,6 +18,7 @@ Despite these challenges, technology continues to drive innovation and progress.
 """
 
 
+import sumy
 import streamlit as st
 import random
 from sumy.parsers.plaintext import PlaintextParser
