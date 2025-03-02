@@ -17,7 +17,7 @@ However, technology also brings challenges like cybersecurity threats, data priv
 Despite these challenges, technology continues to drive innovation and progress. When used responsibly, it has the potential to solve global issues such as climate change and disease control, shaping a more advanced and sustainable future for humanity.
 """
 
-!pip install sumy
+
 
 import nltk
 nltk.download('punkt_tab')
