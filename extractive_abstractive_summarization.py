@@ -18,17 +18,14 @@ Despite these challenges, technology continues to drive innovation and progress.
 """
 
 
-pip install sumy
-pip install nltk
-import nltk
-nltk.download('punkt_tab')
+import streamlit as st
+import random
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.text_rank import TextRankSummarizer
 from sumy.summarizers.lex_rank import LexRankSummarizer
 from transformers import T5Tokenizer, T5ForConditionalGeneration, BartTokenizer, BartForConditionalGeneration
 import torch
-import random
 
 def extractive_summaries(text, num_sentences_list=[2, 3, 4, 5]):
     parser = PlaintextParser.from_string(text, Tokenizer("english"))
@@ -42,11 +39,11 @@ def extractive_summaries(text, num_sentences_list=[2, 3, 4, 5]):
             key = f"{name} ({num_sentences} sentences)"
             summary = summarizer(parser.document, num_sentences)
             sentences = [str(sentence) for sentence in summary]
-            random.shuffle(sentences)  # Shuffle to create variations
+            random.shuffle(sentences)
             summaries[key] = " ".join(sentences)
     return summaries
 
-def abstractive_summaries(text, max_length=100, min_length=30, num_variants=5):
+def abstractive_summaries(text, max_length=100, min_length=30, num_variants=3):
     models = {
         "T5": ("t5-small", T5Tokenizer, T5ForConditionalGeneration),
         "BART": ("facebook/bart-large-cnn", BartTokenizer, BartForConditionalGeneration)
@@ -61,25 +58,25 @@ def abstractive_summaries(text, max_length=100, min_length=30, num_variants=5):
         for _ in range(num_variants):
             summary_ids = model.generate(
                 inputs, max_length=max_length, min_length=min_length, length_penalty=random.uniform(1.5, 2.5),
-                num_beams=random.choice([4, 6, 8]), top_k=random.choice([30, 50, 70]),
-                top_p=random.uniform(0.8, 0.98), temperature=random.uniform(0.6, 1.0),
-                do_sample=True, early_stopping=True
+                num_beams=5, do_sample=True, temperature=0.7
             )
             model_summaries.append(tokenizer.decode(summary_ids[0], skip_special_tokens=True))
         summaries[model_name] = model_summaries
     return summaries
 
-# Example Usage
-if __name__ == "__main__":
-    text = input("Enter text to summarize:")
+st.title("Text Summarization Tool")
+st.write("This app generates both Extractive and Abstractive summaries of your text.")
 
-    print("Extractive Summaries:")
-    for key, summary in extractive_summaries(text).items():
-        print(f"{key}: {summary}\n")
+text = st.text_area("Enter text to summarize:")
 
-    print("\nAbstractive Summaries:")
+if st.button("Summarize") and text:
+    st.subheader("Extractive Summaries")
+    extractive = extractive_summaries(text)
+    for key, summary in extractive.items():
+        st.write(f"**{key}:** {summary}")
+    
+    st.subheader("Abstractive Summaries")
     abstractive = abstractive_summaries(text)
     for model, summaries in abstractive.items():
         for i, summary in enumerate(summaries, 1):
-            print(f"{model} Variant {i}: {summary}\n")
-
+            st.write(f"**{model} Variant {i}:** {summary}")
