@@ -18,6 +18,8 @@ Despite these challenges, technology continues to drive innovation and progress.
 """
 
 
+pip install nltk
+pip install sumy
 
 import nltk
 nltk.download('punkt_tab')
